@@ -13,10 +13,13 @@
 <meta property="og:url" content="http://example.com/2021/01/13/k-means%E7%AE%97%E6%B3%95%E6%B5%81%E7%A8%8B/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="c:/Users/cheng/Desktop/微信截图_20210113220627.png">
+<meta property="og:image" content="c:/Users/cheng/Desktop/微信截图_20210113220649.png">
 <meta property="article:published_time" content="2021-01-13T09:49:43.000Z">
-<meta property="article:modified_time" content="2021-01-13T09:50:32.204Z">
+<meta property="article:modified_time" content="2021-01-13T14:08:31.091Z">
 <meta property="article:author" content="Wang">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="c:/Users/cheng/Desktop/微信截图_20210113220627.png">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -187,6 +190,13 @@
 <li>直到质心不再改变或改变很小，算法即收敛</li>
 </ol>
 <p>算法关键：k值的选择 和 迭代的次数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> sklearn.cluster <span class="keyword">import</span> MiniBatchKMeans,k_means</span><br><span class="line"><span class="keyword">from</span> sklearn <span class="keyword">import</span> metrics <span class="comment">#数据簇的生成器</span></span><br><span class="line"><span class="keyword">from</span> sklearn.datasets._samples_generator <span class="keyword">import</span> make_blobs</span><br><span class="line"></span><br><span class="line"><span class="comment">#数据集生成</span></span><br><span class="line">x,y =make_blobs(n_samples=<span class="number">1000</span>,n_features=<span class="number">2</span>,centers=[[-<span class="number">1</span>,-<span class="number">1</span>],[<span class="number">0</span>,<span class="number">0</span>],[<span class="number">1</span>,<span class="number">1</span>],[<span class="number">2</span>,<span class="number">2</span>]],cluster_std=[<span class="number">0.3</span>,<span class="number">0.2</span>,<span class="number">0.2</span>,<span class="number">0.2</span>],random_state=<span class="number">9</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#生成数据散点图</span></span><br><span class="line">plt.scatter(x[:,<span class="number">0</span>],x[:,<span class="number">1</span>],marker=<span class="string">&quot;o&quot;</span>)</span><br><span class="line"><span class="comment">#plt.show()</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#可视化</span></span><br><span class="line"><span class="keyword">for</span> index,k <span class="keyword">in</span> <span class="built_in">enumerate</span>((<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>)):</span><br><span class="line">    plt.subplot(<span class="number">2</span>,<span class="number">2</span>,index+<span class="number">1</span>)</span><br><span class="line">    y_pred= MiniBatchKMeans(n_clusters=k,batch_size=<span class="number">200</span>,random_state=<span class="number">9</span>).fit_predict(x)</span><br><span class="line">    score=metrics.calinski_harabasz_score(x,y_pred)</span><br><span class="line">    plt.scatter(x[:,<span class="number">0</span>],x[:,<span class="number">1</span>],c=y_pred)</span><br><span class="line">    plt.text(<span class="number">.99</span>,<span class="number">.01</span>,(<span class="string">&#x27;k=%d,score:%.2f&#x27;</span> % (k,score)),</span><br><span class="line">             transform=plt.gca().transAxes,size=<span class="number">10</span>,horizontalalignment=<span class="string">&#x27;right&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    plt.show()</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="C:\Users\cheng\Desktop\微信截图_20210113220627.png" alt="样本散点图"></p>
+<p>​                                                                            样本散点图</p>
+<p><img src="C:\Users\cheng\Desktop\微信截图_20210113220649.png" alt="k为4聚类结果图"></p>
+<p>​                                                                                k=4聚类结果图</p>
 
       
 
