@@ -1,0 +1,1638 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>3-订单持续时间的计算.md | Hexo</title>
+  <meta name="description" content="1#读取taxiod订单表  1#删除练习  1234import pandas as pdtaxiod &#x3D; pd.read_csv(r&amp;#x27;data-sample&#x2F;TaxiOD.csv&amp;#x27;,header&#x3D;None) # 要加上后缀名 .csvtaxiod.columns&#x3D;[&amp;#x27;VehicleNum&amp;#x27;,&amp;#x27;Stime&amp;#x27;,&amp;#x27;SLng&amp;#x2">
+<meta property="og:type" content="article">
+<meta property="og:title" content="3-订单持续时间的计算.md">
+<meta property="og:url" content="http://example.com/2021/03/03/3-%E8%AE%A2%E5%8D%95%E6%8C%81%E7%BB%AD%E6%97%B6%E9%97%B4%E7%9A%84%E8%AE%A1%E7%AE%97-md/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="1#读取taxiod订单表  1#删除练习  1234import pandas as pdtaxiod &#x3D; pd.read_csv(r&amp;#x27;data-sample&#x2F;TaxiOD.csv&amp;#x27;,header&#x3D;None) # 要加上后缀名 .csvtaxiod.columns&#x3D;[&amp;#x27;VehicleNum&amp;#x27;,&amp;#x27;Stime&amp;#x27;,&amp;#x27;SLng&amp;#x2">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="c:/Users/cheng/Documents/Edge/订单持续时间的计算/output_15_0.png">
+<meta property="og:image" content="c:/Users/cheng/Documents/Edge/订单持续时间的计算/output_16_0.png">
+<meta property="og:image" content="c:/Users/cheng/Documents/Edge/订单持续时间的计算/output_17_0.png">
+<meta property="article:published_time" content="2021-03-03T13:01:37.000Z">
+<meta property="article:modified_time" content="2021-03-03T13:02:43.954Z">
+<meta property="article:author" content="Wang">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="c:/Users/cheng/Documents/Edge/订单持续时间的计算/output_15_0.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="http://example.com/2021/03/03/3-%E8%AE%A2%E5%8D%95%E6%8C%81%E7%BB%AD%E6%97%B6%E9%97%B4%E7%9A%84%E8%AE%A1%E7%AE%97-md/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+
+<body class="main-center" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/cofess" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">昵称</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Web Developer &amp; Designer</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Shenzhen, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="Search" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="Type something..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">Home</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">Archives</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">Categories</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">Tags</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">Repository</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">Books</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">Links</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">About</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/cofess" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://weibo.com/cofess" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/iwebued" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="https://www.behance.net/cofess" target="_blank" title="Behance" data-toggle=tooltip data-placement=top><i class="icon icon-behance"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">Board</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+
+    
+      
+
+    
+      
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">Archive</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">March 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">January 2021</a><span class="archive-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2021/03/03/3-%E8%AE%A2%E5%8D%95%E6%8C%81%E7%BB%AD%E6%97%B6%E9%97%B4%E7%9A%84%E8%AE%A1%E7%AE%97-md/" class="title">3-订单持续时间的计算.md</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-03-03T13:01:37.000Z" itemprop="datePublished">2021-03-03</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2021/01/21/1-%E5%87%BA%E7%A7%9F%E8%BD%A6%E6%95%B0%E6%8D%AE%E7%9A%84%E5%9F%BA%E7%A1%80%E5%A4%84%E7%90%86%EF%BC%8C%E7%94%B1gps%E7%94%9F%E6%88%90OD%EF%BC%88pandas%EF%BC%89/" class="title">1-出租车数据的基础处理，由gps生成OD（pandas）</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-01-21T06:51:56.000Z" itemprop="datePublished">2021-01-21</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2021/01/13/k-means%E7%AE%97%E6%B3%95%E6%B5%81%E7%A8%8B/" class="title">k-means算法流程</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-01-13T09:49:43.000Z" itemprop="datePublished">2021-01-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2021/01/11/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87blog/" class="title">我的第一篇blog</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-01-11T04:32:21.000Z" itemprop="datePublished">2021-01-11</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2021/01/09/hello-world/" class="title">Hello World</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-01-09T03:31:41.374Z" itemprop="datePublished">2021-01-09</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-3-订单持续时间的计算-md" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      3-订单持续时间的计算.md
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2021/03/03/3-%E8%AE%A2%E5%8D%95%E6%8C%81%E7%BB%AD%E6%97%B6%E9%97%B4%E7%9A%84%E8%AE%A1%E7%AE%97-md/" class="article-date">
+	  <time datetime="2021-03-03T13:01:37.000Z" itemprop="datePublished">2021-03-03</time>
+	</a>
+</span>
+        
+        
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/03/03/3-%E8%AE%A2%E5%8D%95%E6%8C%81%E7%BB%AD%E6%97%B6%E9%97%B4%E7%9A%84%E8%AE%A1%E7%AE%97-md/#comments" class="article-comment-link">Comments</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#读取taxiod订单表</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#删除练习</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line">taxiod = pd.read_csv(<span class="string">r&#x27;data-sample/TaxiOD.csv&#x27;</span>,header=<span class="literal">None</span>) <span class="comment"># 要加上后缀名 .csv</span></span><br><span class="line">taxiod.columns=[<span class="string">&#x27;VehicleNum&#x27;</span>,<span class="string">&#x27;Stime&#x27;</span>,<span class="string">&#x27;SLng&#x27;</span>,<span class="string">&#x27;SLat&#x27;</span>,<span class="string">&#x27;ELng&#x27;</span>,<span class="string">&#x27;ELat&#x27;</span>,<span class="string">&#x27;Etime&#x27;</span>]</span><br><span class="line">taxiod</span><br></pre></td></tr></table></figure>
+<pre><code>C:\Program Files (x86)\Anaconda3\lib\site-packages\IPython\core\interactiveshell.py:3146: DtypeWarning: Columns (0,2,3,4,5) have mixed types.Specify dtype option on import or set low_memory=False.
+  has_raised = await self.run_ast_nodes(code_ast.body, cell_name,</code></pre>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+
+<pre><code>.dataframe tbody tr th &#123;
+    vertical-align: top;
+&#125;
+
+.dataframe thead th &#123;
+    text-align: right;
+&#125;</code></pre>
+<p></style></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>VehicleNum</th>
+      <th>Stime</th>
+      <th>SLng</th>
+      <th>SLat</th>
+      <th>ELng</th>
+      <th>ELat</th>
+      <th>Etime</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>VehicleNum</td>
+      <td>Stime</td>
+      <td>SLng</td>
+      <td>SLat</td>
+      <td>ELng</td>
+      <td>ELat</td>
+      <td>Etime</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>22223</td>
+      <td>00:03:23</td>
+      <td>114.16746499999999</td>
+      <td>22.562468</td>
+      <td>114.22523500000001</td>
+      <td>22.55275</td>
+      <td>00:10:48</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>22223</td>
+      <td>00:11:33</td>
+      <td>114.22715</td>
+      <td>22.554167</td>
+      <td>114.22921799999999</td>
+      <td>22.560217</td>
+      <td>00:15:19</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>22223</td>
+      <td>00:17:13</td>
+      <td>114.23135400000001</td>
+      <td>22.562166</td>
+      <td>114.255798</td>
+      <td>22.590967000000003</td>
+      <td>00:29:06</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>22223</td>
+      <td>00:36:45</td>
+      <td>114.240196</td>
+      <td>22.56365</td>
+      <td>114.119965</td>
+      <td>22.566668</td>
+      <td>00:54:42</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>464714</th>
+      <td>36947</td>
+      <td>22:39:12</td>
+      <td>114.006</td>
+      <td>22.5481</td>
+      <td>113.996</td>
+      <td>22.5371</td>
+      <td>22:46:25</td>
+    </tr>
+    <tr>
+      <th>464715</th>
+      <td>36947</td>
+      <td>22:49:38</td>
+      <td>113.995</td>
+      <td>22.535</td>
+      <td>113.922</td>
+      <td>22.4965</td>
+      <td>23:13:15</td>
+    </tr>
+    <tr>
+      <th>464716</th>
+      <td>36947</td>
+      <td>23:24:24</td>
+      <td>113.921</td>
+      <td>22.5135</td>
+      <td>113.93</td>
+      <td>22.4942</td>
+      <td>23:30:32</td>
+    </tr>
+    <tr>
+      <th>464717</th>
+      <td>36947</td>
+      <td>23:37:09</td>
+      <td>113.928</td>
+      <td>22.5126</td>
+      <td>113.911</td>
+      <td>22.4879</td>
+      <td>23:49:10</td>
+    </tr>
+    <tr>
+      <th>464718</th>
+      <td>36947</td>
+      <td>23:52:18</td>
+      <td>113.91</td>
+      <td>22.4876</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+<p>464719 rows × 7 columns</p>
+
+</div>
+
+
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">taxiod=taxiod.drop([<span class="number">0</span>])  <span class="comment"># 删除第一行 </span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">taxiod.index = <span class="built_in">range</span>(<span class="built_in">len</span>(taxiod)) <span class="comment"># 重新排序索引</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">taxiod</span><br></pre></td></tr></table></figure>
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+
+<pre><code>.dataframe tbody tr th &#123;
+    vertical-align: top;
+&#125;
+
+.dataframe thead th &#123;
+    text-align: right;
+&#125;</code></pre>
+<p></style></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>VehicleNum</th>
+      <th>Stime</th>
+      <th>SLng</th>
+      <th>SLat</th>
+      <th>ELng</th>
+      <th>ELat</th>
+      <th>Etime</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>22223</td>
+      <td>00:03:23</td>
+      <td>114.16746499999999</td>
+      <td>22.562468</td>
+      <td>114.22523500000001</td>
+      <td>22.55275</td>
+      <td>00:10:48</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>22223</td>
+      <td>00:11:33</td>
+      <td>114.22715</td>
+      <td>22.554167</td>
+      <td>114.22921799999999</td>
+      <td>22.560217</td>
+      <td>00:15:19</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>22223</td>
+      <td>00:17:13</td>
+      <td>114.23135400000001</td>
+      <td>22.562166</td>
+      <td>114.255798</td>
+      <td>22.590967000000003</td>
+      <td>00:29:06</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>22223</td>
+      <td>00:36:45</td>
+      <td>114.240196</td>
+      <td>22.56365</td>
+      <td>114.119965</td>
+      <td>22.566668</td>
+      <td>00:54:42</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>22223</td>
+      <td>01:01:14</td>
+      <td>114.13541399999998</td>
+      <td>22.575933</td>
+      <td>114.166748</td>
+      <td>22.608267</td>
+      <td>01:08:17</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>464713</th>
+      <td>36947</td>
+      <td>22:39:12</td>
+      <td>114.006</td>
+      <td>22.5481</td>
+      <td>113.996</td>
+      <td>22.5371</td>
+      <td>22:46:25</td>
+    </tr>
+    <tr>
+      <th>464714</th>
+      <td>36947</td>
+      <td>22:49:38</td>
+      <td>113.995</td>
+      <td>22.535</td>
+      <td>113.922</td>
+      <td>22.4965</td>
+      <td>23:13:15</td>
+    </tr>
+    <tr>
+      <th>464715</th>
+      <td>36947</td>
+      <td>23:24:24</td>
+      <td>113.921</td>
+      <td>22.5135</td>
+      <td>113.93</td>
+      <td>22.4942</td>
+      <td>23:30:32</td>
+    </tr>
+    <tr>
+      <th>464716</th>
+      <td>36947</td>
+      <td>23:37:09</td>
+      <td>113.928</td>
+      <td>22.5126</td>
+      <td>113.911</td>
+      <td>22.4879</td>
+      <td>23:49:10</td>
+    </tr>
+    <tr>
+      <th>464717</th>
+      <td>36947</td>
+      <td>23:52:18</td>
+      <td>113.91</td>
+      <td>22.4876</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+<p>464718 rows × 7 columns</p>
+
+</div>
+
+
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">taxiod=taxiod[-taxiod[<span class="string">&#x27;ELng&#x27;</span>].isnull()] <span class="comment"># 删掉最后一行为空的   方法  先找到为空的 然后索引 然后去掉  然后赋值给taxiod</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tmp= pd.to_datetime(taxiod[<span class="string">&#x27;Stime&#x27;</span>])</span><br><span class="line">tmp</span><br></pre></td></tr></table></figure>
+
+
+
+<pre><code>0        2021-03-03 00:03:23
+1        2021-03-03 00:11:33
+2        2021-03-03 00:17:13
+3        2021-03-03 00:36:45
+4        2021-03-03 01:01:14
+                 ...        
+464712   2021-03-03 22:08:22
+464713   2021-03-03 22:39:12
+464714   2021-03-03 22:49:38
+464715   2021-03-03 23:24:24
+464716   2021-03-03 23:37:09
+Name: Stime, Length: 464717, dtype: datetime64[ns]</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tmp1=pd.to_datetime(taxiod[<span class="string">&#x27;Etime&#x27;</span>])</span><br><span class="line">tmp1</span><br></pre></td></tr></table></figure>
+
+
+
+<pre><code>0        2021-03-03 00:10:48
+1        2021-03-03 00:15:19
+2        2021-03-03 00:29:06
+3        2021-03-03 00:54:42
+4        2021-03-03 01:08:17
+                 ...        
+464712   2021-03-03 22:36:53
+464713   2021-03-03 22:46:25
+464714   2021-03-03 23:13:15
+464715   2021-03-03 23:30:32
+464716   2021-03-03 23:49:10
+Name: Etime, Length: 464717, dtype: datetime64[ns]</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Duration=tmp1-tmp</span><br><span class="line">Duration</span><br><span class="line">taxiod[<span class="string">&#x27;Duration&#x27;</span>]=Duration</span><br><span class="line">taxiod</span><br></pre></td></tr></table></figure>
+<pre><code>&lt;ipython-input-10-8b258a85ed6d&gt;:3: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  taxiod[&#39;Duration&#39;]=Duration</code></pre>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+
+<pre><code>.dataframe tbody tr th &#123;
+    vertical-align: top;
+&#125;
+
+.dataframe thead th &#123;
+    text-align: right;
+&#125;</code></pre>
+<p></style></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>VehicleNum</th>
+      <th>Stime</th>
+      <th>SLng</th>
+      <th>SLat</th>
+      <th>ELng</th>
+      <th>ELat</th>
+      <th>Etime</th>
+      <th>Duration</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>22223</td>
+      <td>00:03:23</td>
+      <td>114.16746499999999</td>
+      <td>22.562468</td>
+      <td>114.22523500000001</td>
+      <td>22.55275</td>
+      <td>00:10:48</td>
+      <td>0 days 00:07:25</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>22223</td>
+      <td>00:11:33</td>
+      <td>114.22715</td>
+      <td>22.554167</td>
+      <td>114.22921799999999</td>
+      <td>22.560217</td>
+      <td>00:15:19</td>
+      <td>0 days 00:03:46</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>22223</td>
+      <td>00:17:13</td>
+      <td>114.23135400000001</td>
+      <td>22.562166</td>
+      <td>114.255798</td>
+      <td>22.590967000000003</td>
+      <td>00:29:06</td>
+      <td>0 days 00:11:53</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>22223</td>
+      <td>00:36:45</td>
+      <td>114.240196</td>
+      <td>22.56365</td>
+      <td>114.119965</td>
+      <td>22.566668</td>
+      <td>00:54:42</td>
+      <td>0 days 00:17:57</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>22223</td>
+      <td>01:01:14</td>
+      <td>114.13541399999998</td>
+      <td>22.575933</td>
+      <td>114.166748</td>
+      <td>22.608267</td>
+      <td>01:08:17</td>
+      <td>0 days 00:07:03</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>464712</th>
+      <td>36947</td>
+      <td>22:08:22</td>
+      <td>113.914</td>
+      <td>22.5314</td>
+      <td>113.997</td>
+      <td>22.5456</td>
+      <td>22:36:53</td>
+      <td>0 days 00:28:31</td>
+    </tr>
+    <tr>
+      <th>464713</th>
+      <td>36947</td>
+      <td>22:39:12</td>
+      <td>114.006</td>
+      <td>22.5481</td>
+      <td>113.996</td>
+      <td>22.5371</td>
+      <td>22:46:25</td>
+      <td>0 days 00:07:13</td>
+    </tr>
+    <tr>
+      <th>464714</th>
+      <td>36947</td>
+      <td>22:49:38</td>
+      <td>113.995</td>
+      <td>22.535</td>
+      <td>113.922</td>
+      <td>22.4965</td>
+      <td>23:13:15</td>
+      <td>0 days 00:23:37</td>
+    </tr>
+    <tr>
+      <th>464715</th>
+      <td>36947</td>
+      <td>23:24:24</td>
+      <td>113.921</td>
+      <td>22.5135</td>
+      <td>113.93</td>
+      <td>22.4942</td>
+      <td>23:30:32</td>
+      <td>0 days 00:06:08</td>
+    </tr>
+    <tr>
+      <th>464716</th>
+      <td>36947</td>
+      <td>23:37:09</td>
+      <td>113.928</td>
+      <td>22.5126</td>
+      <td>113.911</td>
+      <td>22.4879</td>
+      <td>23:49:10</td>
+      <td>0 days 00:12:01</td>
+    </tr>
+  </tbody>
+</table>
+<p>464717 rows × 8 columns</p>
+
+</div>
+
+
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">taxiod.rename(columns=&#123;<span class="string">&#x27;duration&#x27;</span>: <span class="string">&#x27;Duration&#x27;</span>&#125;, inplace=<span class="literal">True</span>)  <span class="comment"># 重命名某列</span></span><br></pre></td></tr></table></figure>
+<pre><code>C:\Program Files (x86)\Anaconda3\lib\site-packages\pandas\core\frame.py:4296: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  return super().rename(</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">taxiod</span><br></pre></td></tr></table></figure>
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+
+<pre><code>.dataframe tbody tr th &#123;
+    vertical-align: top;
+&#125;
+
+.dataframe thead th &#123;
+    text-align: right;
+&#125;</code></pre>
+<p></style></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>VehicleNum</th>
+      <th>Stime</th>
+      <th>SLng</th>
+      <th>SLat</th>
+      <th>ELng</th>
+      <th>ELat</th>
+      <th>Etime</th>
+      <th>Duration</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>22223</td>
+      <td>00:03:23</td>
+      <td>114.16746499999999</td>
+      <td>22.562468</td>
+      <td>114.22523500000001</td>
+      <td>22.55275</td>
+      <td>00:10:48</td>
+      <td>0 days 00:07:25</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>22223</td>
+      <td>00:11:33</td>
+      <td>114.22715</td>
+      <td>22.554167</td>
+      <td>114.22921799999999</td>
+      <td>22.560217</td>
+      <td>00:15:19</td>
+      <td>0 days 00:03:46</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>22223</td>
+      <td>00:17:13</td>
+      <td>114.23135400000001</td>
+      <td>22.562166</td>
+      <td>114.255798</td>
+      <td>22.590967000000003</td>
+      <td>00:29:06</td>
+      <td>0 days 00:11:53</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>22223</td>
+      <td>00:36:45</td>
+      <td>114.240196</td>
+      <td>22.56365</td>
+      <td>114.119965</td>
+      <td>22.566668</td>
+      <td>00:54:42</td>
+      <td>0 days 00:17:57</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>22223</td>
+      <td>01:01:14</td>
+      <td>114.13541399999998</td>
+      <td>22.575933</td>
+      <td>114.166748</td>
+      <td>22.608267</td>
+      <td>01:08:17</td>
+      <td>0 days 00:07:03</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>464712</th>
+      <td>36947</td>
+      <td>22:08:22</td>
+      <td>113.914</td>
+      <td>22.5314</td>
+      <td>113.997</td>
+      <td>22.5456</td>
+      <td>22:36:53</td>
+      <td>0 days 00:28:31</td>
+    </tr>
+    <tr>
+      <th>464713</th>
+      <td>36947</td>
+      <td>22:39:12</td>
+      <td>114.006</td>
+      <td>22.5481</td>
+      <td>113.996</td>
+      <td>22.5371</td>
+      <td>22:46:25</td>
+      <td>0 days 00:07:13</td>
+    </tr>
+    <tr>
+      <th>464714</th>
+      <td>36947</td>
+      <td>22:49:38</td>
+      <td>113.995</td>
+      <td>22.535</td>
+      <td>113.922</td>
+      <td>22.4965</td>
+      <td>23:13:15</td>
+      <td>0 days 00:23:37</td>
+    </tr>
+    <tr>
+      <th>464715</th>
+      <td>36947</td>
+      <td>23:24:24</td>
+      <td>113.921</td>
+      <td>22.5135</td>
+      <td>113.93</td>
+      <td>22.4942</td>
+      <td>23:30:32</td>
+      <td>0 days 00:06:08</td>
+    </tr>
+    <tr>
+      <th>464716</th>
+      <td>36947</td>
+      <td>23:37:09</td>
+      <td>113.928</td>
+      <td>22.5126</td>
+      <td>113.911</td>
+      <td>22.4879</td>
+      <td>23:49:10</td>
+      <td>0 days 00:12:01</td>
+    </tr>
+  </tbody>
+</table>
+<p>464717 rows × 8 columns</p>
+
+</div>
+
+
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">r=taxiod[<span class="string">&#x27;Duration&#x27;</span>].iloc[<span class="number">0</span>]</span><br><span class="line">taxiod[<span class="string">&#x27;order_time&#x27;</span>]=taxiod[<span class="string">&#x27;Duration&#x27;</span>].apply(<span class="keyword">lambda</span> r:r.seconds)</span><br></pre></td></tr></table></figure>
+<pre><code>&lt;ipython-input-13-d23b5d7f6867&gt;:2: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  taxiod[&#39;order_time&#39;]=taxiod[&#39;Duration&#39;].apply(lambda r:r.seconds)</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">taxiod.drop(columns=[<span class="string">&#x27;Duration&#x27;</span>])</span><br></pre></td></tr></table></figure>
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+
+<pre><code>.dataframe tbody tr th &#123;
+    vertical-align: top;
+&#125;
+
+.dataframe thead th &#123;
+    text-align: right;
+&#125;</code></pre>
+<p></style></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>VehicleNum</th>
+      <th>Stime</th>
+      <th>SLng</th>
+      <th>SLat</th>
+      <th>ELng</th>
+      <th>ELat</th>
+      <th>Etime</th>
+      <th>order_time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>22223</td>
+      <td>00:03:23</td>
+      <td>114.16746499999999</td>
+      <td>22.562468</td>
+      <td>114.22523500000001</td>
+      <td>22.55275</td>
+      <td>00:10:48</td>
+      <td>445</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>22223</td>
+      <td>00:11:33</td>
+      <td>114.22715</td>
+      <td>22.554167</td>
+      <td>114.22921799999999</td>
+      <td>22.560217</td>
+      <td>00:15:19</td>
+      <td>226</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>22223</td>
+      <td>00:17:13</td>
+      <td>114.23135400000001</td>
+      <td>22.562166</td>
+      <td>114.255798</td>
+      <td>22.590967000000003</td>
+      <td>00:29:06</td>
+      <td>713</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>22223</td>
+      <td>00:36:45</td>
+      <td>114.240196</td>
+      <td>22.56365</td>
+      <td>114.119965</td>
+      <td>22.566668</td>
+      <td>00:54:42</td>
+      <td>1077</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>22223</td>
+      <td>01:01:14</td>
+      <td>114.13541399999998</td>
+      <td>22.575933</td>
+      <td>114.166748</td>
+      <td>22.608267</td>
+      <td>01:08:17</td>
+      <td>423</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>464712</th>
+      <td>36947</td>
+      <td>22:08:22</td>
+      <td>113.914</td>
+      <td>22.5314</td>
+      <td>113.997</td>
+      <td>22.5456</td>
+      <td>22:36:53</td>
+      <td>1711</td>
+    </tr>
+    <tr>
+      <th>464713</th>
+      <td>36947</td>
+      <td>22:39:12</td>
+      <td>114.006</td>
+      <td>22.5481</td>
+      <td>113.996</td>
+      <td>22.5371</td>
+      <td>22:46:25</td>
+      <td>433</td>
+    </tr>
+    <tr>
+      <th>464714</th>
+      <td>36947</td>
+      <td>22:49:38</td>
+      <td>113.995</td>
+      <td>22.535</td>
+      <td>113.922</td>
+      <td>22.4965</td>
+      <td>23:13:15</td>
+      <td>1417</td>
+    </tr>
+    <tr>
+      <th>464715</th>
+      <td>36947</td>
+      <td>23:24:24</td>
+      <td>113.921</td>
+      <td>22.5135</td>
+      <td>113.93</td>
+      <td>22.4942</td>
+      <td>23:30:32</td>
+      <td>368</td>
+    </tr>
+    <tr>
+      <th>464716</th>
+      <td>36947</td>
+      <td>23:37:09</td>
+      <td>113.928</td>
+      <td>22.5126</td>
+      <td>113.911</td>
+      <td>22.4879</td>
+      <td>23:49:10</td>
+      <td>721</td>
+    </tr>
+  </tbody>
+</table>
+<p>464717 rows × 8 columns</p>
+
+</div>
+
+
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">taxiod[<span class="string">&#x27;hour&#x27;</span>]=taxiod[<span class="string">&#x27;Stime&#x27;</span>].apply(<span class="keyword">lambda</span> r:r.split(<span class="string">&#x27;:&#x27;</span>)[<span class="number">0</span>])</span><br><span class="line">taxiod</span><br></pre></td></tr></table></figure>
+<pre><code>&lt;ipython-input-15-c7c6b55b9ff2&gt;:1: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  taxiod[&#39;hour&#39;]=taxiod[&#39;Stime&#39;].apply(lambda r:r.split(&#39;:&#39;)[0])</code></pre>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+
+<pre><code>.dataframe tbody tr th &#123;
+    vertical-align: top;
+&#125;
+
+.dataframe thead th &#123;
+    text-align: right;
+&#125;</code></pre>
+<p></style></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>VehicleNum</th>
+      <th>Stime</th>
+      <th>SLng</th>
+      <th>SLat</th>
+      <th>ELng</th>
+      <th>ELat</th>
+      <th>Etime</th>
+      <th>Duration</th>
+      <th>order_time</th>
+      <th>hour</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>22223</td>
+      <td>00:03:23</td>
+      <td>114.16746499999999</td>
+      <td>22.562468</td>
+      <td>114.22523500000001</td>
+      <td>22.55275</td>
+      <td>00:10:48</td>
+      <td>0 days 00:07:25</td>
+      <td>445</td>
+      <td>00</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>22223</td>
+      <td>00:11:33</td>
+      <td>114.22715</td>
+      <td>22.554167</td>
+      <td>114.22921799999999</td>
+      <td>22.560217</td>
+      <td>00:15:19</td>
+      <td>0 days 00:03:46</td>
+      <td>226</td>
+      <td>00</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>22223</td>
+      <td>00:17:13</td>
+      <td>114.23135400000001</td>
+      <td>22.562166</td>
+      <td>114.255798</td>
+      <td>22.590967000000003</td>
+      <td>00:29:06</td>
+      <td>0 days 00:11:53</td>
+      <td>713</td>
+      <td>00</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>22223</td>
+      <td>00:36:45</td>
+      <td>114.240196</td>
+      <td>22.56365</td>
+      <td>114.119965</td>
+      <td>22.566668</td>
+      <td>00:54:42</td>
+      <td>0 days 00:17:57</td>
+      <td>1077</td>
+      <td>00</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>22223</td>
+      <td>01:01:14</td>
+      <td>114.13541399999998</td>
+      <td>22.575933</td>
+      <td>114.166748</td>
+      <td>22.608267</td>
+      <td>01:08:17</td>
+      <td>0 days 00:07:03</td>
+      <td>423</td>
+      <td>01</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>464712</th>
+      <td>36947</td>
+      <td>22:08:22</td>
+      <td>113.914</td>
+      <td>22.5314</td>
+      <td>113.997</td>
+      <td>22.5456</td>
+      <td>22:36:53</td>
+      <td>0 days 00:28:31</td>
+      <td>1711</td>
+      <td>22</td>
+    </tr>
+    <tr>
+      <th>464713</th>
+      <td>36947</td>
+      <td>22:39:12</td>
+      <td>114.006</td>
+      <td>22.5481</td>
+      <td>113.996</td>
+      <td>22.5371</td>
+      <td>22:46:25</td>
+      <td>0 days 00:07:13</td>
+      <td>433</td>
+      <td>22</td>
+    </tr>
+    <tr>
+      <th>464714</th>
+      <td>36947</td>
+      <td>22:49:38</td>
+      <td>113.995</td>
+      <td>22.535</td>
+      <td>113.922</td>
+      <td>22.4965</td>
+      <td>23:13:15</td>
+      <td>0 days 00:23:37</td>
+      <td>1417</td>
+      <td>22</td>
+    </tr>
+    <tr>
+      <th>464715</th>
+      <td>36947</td>
+      <td>23:24:24</td>
+      <td>113.921</td>
+      <td>22.5135</td>
+      <td>113.93</td>
+      <td>22.4942</td>
+      <td>23:30:32</td>
+      <td>0 days 00:06:08</td>
+      <td>368</td>
+      <td>23</td>
+    </tr>
+    <tr>
+      <th>464716</th>
+      <td>36947</td>
+      <td>23:37:09</td>
+      <td>113.928</td>
+      <td>22.5126</td>
+      <td>113.911</td>
+      <td>22.4879</td>
+      <td>23:49:10</td>
+      <td>0 days 00:12:01</td>
+      <td>721</td>
+      <td>23</td>
+    </tr>
+  </tbody>
+</table>
+<p>464717 rows × 10 columns</p>
+
+</div>
+
+
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">fig  =plt.figure(<span class="number">1</span>,(<span class="number">7</span>,<span class="number">3</span>),dpi=<span class="number">250</span>)</span><br><span class="line">ax   =plt.subplot(<span class="number">111</span>)</span><br><span class="line">plt.sca(ax)</span><br><span class="line"></span><br><span class="line">plt.boxplot(taxiod[<span class="string">&#x27;order_time&#x27;</span>]/<span class="number">60</span>)</span><br><span class="line">plt.ylabel(<span class="string">&#x27;minutes&#x27;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&#x27;order time&#x27;</span>)</span><br><span class="line">plt.ylim(<span class="number">0</span>,<span class="number">60</span>)</span><br><span class="line"></span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<p>​<br><img src="C:/Users/cheng/Documents/Edge/订单持续时间的计算/output_15_0.png" alt="png"><br>​    </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">fig     = plt.figure(<span class="number">1</span>,(<span class="number">10</span>,<span class="number">5</span>),dpi = <span class="number">250</span>)     </span><br><span class="line">ax      = plt.subplot(<span class="number">111</span>)</span><br><span class="line">plt.sca(ax)</span><br><span class="line"></span><br><span class="line"><span class="comment">#整理数据</span></span><br><span class="line">hour = taxiod[<span class="string">&#x27;hour&#x27;</span>].drop_duplicates().sort_values()</span><br><span class="line">datas = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(hour)):</span><br><span class="line">    datas.append(taxiod[taxiod[<span class="string">&#x27;hour&#x27;</span>]==hour.iloc[i]][<span class="string">&#x27;order_time&#x27;</span>]/<span class="number">60</span>)</span><br><span class="line"><span class="comment">#绘制</span></span><br><span class="line">plt.boxplot(datas)</span><br><span class="line"><span class="comment">#更改x轴ticks的文字</span></span><br><span class="line">plt.xticks(<span class="built_in">range</span>(<span class="number">1</span>,<span class="built_in">len</span>(hour)+<span class="number">1</span>),<span class="built_in">list</span>(hour))</span><br><span class="line"><span class="comment">###################################################################################</span></span><br><span class="line"></span><br><span class="line">plt.ylabel(<span class="string">&#x27;Order time(minutes)&#x27;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&#x27;Order start time&#x27;</span>)</span><br><span class="line">plt.ylim(<span class="number">0</span>,<span class="number">60</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<p>​<br><img src="C:/Users/cheng/Documents/Edge/订单持续时间的计算/output_16_0.png" alt="png"><br>​    </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns </span><br><span class="line">fig     = plt.figure(<span class="number">1</span>,(<span class="number">10</span>,<span class="number">5</span>),dpi = <span class="number">250</span>)     </span><br><span class="line">ax      = plt.subplot(<span class="number">111</span>)</span><br><span class="line">plt.sca(ax)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 只需一行</span></span><br><span class="line">sns.boxplot(x=<span class="string">&#x27;hour&#x27;</span>,y=taxiod[<span class="string">&#x27;order_time&#x27;</span>]/<span class="number">60</span>,data=taxiod,ax=ax)</span><br><span class="line"></span><br><span class="line">plt.ylabel(<span class="string">&#x27;order_time(minutes)&#x27;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&#x27;order start time&#x27;</span>)</span><br><span class="line">plt.ylim(<span class="number">0</span>,(<span class="number">60</span>))</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<p>​<br><img src="C:/Users/cheng/Documents/Edge/订单持续时间的计算/output_17_0.png" alt="png"><br>​    </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="http://example.com/2021/03/03/3-%E8%AE%A2%E5%8D%95%E6%8C%81%E7%BB%AD%E6%97%B6%E9%97%B4%E7%9A%84%E8%AE%A1%E7%AE%97-md/" title="3-订单持续时间的计算.md" target="_blank" rel="external">http://example.com/2021/03/03/3-%E8%AE%A2%E5%8D%95%E6%8C%81%E7%BB%AD%E6%97%B6%E9%97%B4%E7%9A%84%E8%AE%A1%E7%AE%97-md/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/cofess" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/cofess" target="_blank"><span class="text-dark">昵称</span><small class="ml-1x">Web Developer &amp; Designer</small></a></h3>
+        <div>个人简介。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    
+    <li class="next">
+      <a href="/2021/01/21/1-%E5%87%BA%E7%A7%9F%E8%BD%A6%E6%95%B0%E6%8D%AE%E7%9A%84%E5%9F%BA%E7%A1%80%E5%A4%84%E7%90%86%EF%BC%8C%E7%94%B1gps%E7%94%9F%E6%88%90OD%EF%BC%88pandas%EF%BC%89/" title="1-出租车数据的基础处理，由gps生成OD（pandas）"><span>Older&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>$</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>Maybe you could buy me a cup of coffee.</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="Scan Qrcode" title="Scan" />
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">Open alipay app scan this qrcode, buy me a coffee!</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="Scan Qrcode" title="Scan" />
+              </div>
+              <p class="text-muted mv">Scan this qrcode</p>
+              <p class="text-grey">Open wechat app scan this qrcode, buy me a coffee!</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> alipay</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> wechat payment</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/cofess" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://weibo.com/cofess" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/iwebued" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="https://www.behance.net/cofess" target="_blank" title="Behance" data-toggle=tooltip data-placement=top><i class="icon icon-behance"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: '',
+    appKey: '',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>
